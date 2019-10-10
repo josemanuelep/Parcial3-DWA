@@ -1,26 +1,60 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Navigation from './components/Navigation';
+import PlayersDeck from './components/PlayersDeck';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      navigation: [],
+      players: []
+    };
+    this.handleChange = this.handleChange.bind(this);
+    this.getOptions = this.getOptions.bind(this);
+    this.getPlayers = this.getPlayers.bind(this);
+
+  }
+  componentDidMount() {
+    this.getOptions();
+    this.getPlayers();
+
+  }
+
+  getPlayers() {
+
+    fetch('https://dwaapi.juvasquez88.now.sh/atp')
+      .then(res => res.json())
+      .then(data => {
+        this.setState({ players: data.atp.players });
+        console.log(this.state);
+      });
+  }
+
+  getOptions() {
+
+    fetch('https://dwaapi.juvasquez88.now.sh/atp')
+      .then(res => res.json())
+      .then(data => {
+        this.setState({ navigation: data.atp.options });
+      });
+
+  }
+
+
+  handleChange(e) {
+    const { name, value } = e.target;
+    this.setState({
+      [name]: value
+    });
+  }
+  render() {
+    return (
+      <div>
+        <Navigation navigation={this.state.navigation} ></Navigation>
+        <PlayersDeck players={this.state.players}></PlayersDeck>
+      </div>
+    );
+  }
 }
 
 export default App;
